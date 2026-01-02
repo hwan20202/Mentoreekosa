@@ -22,9 +22,9 @@ export function HeroSection() {
             <Input
               type="text"
               placeholder="배우고 싶은 지식을 검색해보세요"
-              className="pl-14 h-14 text-lg rounded-full border-2 focus:border-[#00C471]"
+              className="pl-14 h-14 text-lg rounded-lg border-2 focus:border-[#00C471]"
             />
-            <Button className="absolute right-2 top-1/2 -translate-y-1/2 bg-[#00C471] hover:bg-[#00B368] rounded-full h-10">
+            <Button className="absolute right-2 top-1/2 -translate-y-1/2 bg-[#00C471] hover:bg-[#00B366] rounded-md h-10">
               검색
             </Button>
           </div>
@@ -35,7 +35,7 @@ export function HeroSection() {
             {["React", "Python", "디자인", "AI", "데이터분석"].map((tag) => (
               <button
                 key={tag}
-                className="px-4 py-1.5 text-sm bg-white rounded-full hover:bg-gray-50 border"
+                className="px-4 py-1.5 text-sm bg-white rounded-md hover:bg-gray-50 border"
               >
                 {tag}
               </button>

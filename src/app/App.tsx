@@ -1,10 +1,15 @@
 import { useState, useMemo } from "react";
 import { InfLearnHeader } from "./components/InfLearnHeader";
-import { HeroSection } from "./components/HeroSection";
+import { SearchSection } from "./components/SearchSection";
 import { CategoryTabs } from "./components/CategoryTabs";
-import { CourseGrid } from "./components/CourseGrid";
-import { PromoBanner } from "./components/PromoBanner";
+import { SearchFilters } from "./components/SearchFilters";
+import { SearchResults } from "./components/SearchResults";
 import { InfLearnFooter } from "./components/InfLearnFooter";
+import { LoginDialog } from "./components/LoginDialog";
+import { MyPage } from "./components/MyPage";
+import { ServiceRegistration } from "./components/ServiceRegistration";
+import { ServiceDetail } from "./components/ServiceDetail";
+import { ServiceApplication } from "./components/ServiceApplication";
 import type { Course } from "./components/CourseCard";
 
 // Mock course data
@@ -54,7 +59,7 @@ const allCourses: Course[] = [
   },
   {
     id: 4,
-    title: "실전! 디지털 마케팅 A to Z - 구글 애널리틱스부터 광고 운영까지",
+    title: "실전! 디지털 마케팅 A to Z - 구��� 애널리틱스부터 광고 운영까지",
     instructor: "최마케터",
     price: 59000,
     originalPrice: 118000,
@@ -178,47 +183,177 @@ const allCourses: Course[] = [
 ];
 
 export default function App() {
+  const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [sortBy, setSortBy] = useState("relevant");
+  const [priceFilter, setPriceFilter] = useState("all");
+  const [levelFilter, setLevelFilter] = useState("all");
+  const [user, setUser] = useState<{ email: string; name: string } | null>(null);
+  const [isLoginDialogOpen, setIsLoginDialogOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState<"main" | "mypage" | "service-registration" | "service-detail" | "service-application">("main");
+  const [selectedServiceId, setSelectedServiceId] = useState<number | null>(null);
 
-  // Filter courses by category
-  const filteredCourses = useMemo(() => {
-    if (selectedCategory === "all") {
-      return allCourses;
+  const handleLogin = (userData: { email: string; name: string }) => {
+    setUser(userData);
+  };
+
+  const handleLogout = () => {
+    setUser(null);
+    setCurrentPage("main");
+  };
+
+  const handleCourseClick = (courseId: number) => {
+    setSelectedServiceId(courseId);
+    setCurrentPage("service-detail");
+  };
+
+  // Filter and sort courses
+  const filteredAndSortedCourses = useMemo(() => {
+    let filtered = allCourses;
+
+    // Filter by category
+    if (selectedCategory !== "all") {
+      filtered = filtered.filter(
+        (course) => course.category === selectedCategory
+      );
     }
-    return allCourses.filter((course) => course.category === selectedCategory);
-  }, [selectedCategory]);
 
-  // Get best courses (top rated with isBest flag)
-  const bestCourses = useMemo(() => {
-    return allCourses.filter((course) => course.isBest).slice(0, 4);
-  }, []);
+    // Filter by search query
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(
+        (course) =>
+          course.title.toLowerCase().includes(query) ||
+          course.instructor.toLowerCase().includes(query) ||
+          course.tags.some((tag) => tag.toLowerCase().includes(query))
+      );
+    }
 
-  // Get new courses
-  const newCourses = useMemo(() => {
-    return allCourses.filter((course) => course.isNew).slice(0, 4);
-  }, []);
+    // Filter by price
+    if (priceFilter === "free") {
+      filtered = filtered.filter((course) => course.price === 0);
+    } else if (priceFilter === "paid") {
+      filtered = filtered.filter((course) => course.price > 0);
+    } else if (priceFilter === "discount") {
+      filtered = filtered.filter((course) => course.originalPrice);
+    }
+
+    // Filter by level
+    if (levelFilter !== "all") {
+      filtered = filtered.filter((course) => course.level === levelFilter);
+    }
+
+    // Sort
+    const sorted = [...filtered];
+    switch (sortBy) {
+      case "latest":
+        sorted.reverse();
+        break;
+      case "popular":
+        sorted.sort((a, b) => b.studentCount - a.studentCount);
+        break;
+      case "rating":
+        sorted.sort((a, b) => b.rating - a.rating);
+        break;
+      case "price-low":
+        sorted.sort((a, b) => a.price - b.price);
+        break;
+      case "price-high":
+        sorted.sort((a, b) => b.price - a.price);
+        break;
+      case "relevant":
+      default:
+        // Keep original order or implement relevance logic
+        break;
+    }
+
+    return sorted;
+  }, [searchQuery, selectedCategory, sortBy, priceFilter, levelFilter]);
+
+  // Show ServiceRegistration page
+  if (currentPage === "service-registration") {
+    return (
+      <ServiceRegistration
+        onBack={() => setCurrentPage("main")}
+      />
+    );
+  }
+
+  // Show ServiceDetail page
+  if (currentPage === "service-detail" && selectedServiceId) {
+    return (
+      <ServiceDetail
+        serviceId={selectedServiceId}
+        onBack={() => setCurrentPage("main")}
+        onNavigateToApplication={() => {
+          setCurrentPage("service-application");
+        }}
+      />
+    );
+  }
+
+  // Show ServiceApplication page
+  if (currentPage === "service-application" && selectedServiceId) {
+    return (
+      <ServiceApplication
+        serviceId={selectedServiceId}
+        onBack={() => setCurrentPage("main")}
+      />
+    );
+  }
+
+  // Show MyPage if user is logged in and on mypage
+  if (currentPage === "mypage" && user) {
+    return (
+      <MyPage
+        user={user}
+        onLoginClick={() => setIsLoginDialogOpen(true)}
+        onLogout={handleLogout}
+        onNavigateToMain={() => setCurrentPage("main")}
+        onNavigateToServiceRegistration={() => setCurrentPage("service-registration")}
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-white">
-      <InfLearnHeader />
-      <HeroSection />
+      <InfLearnHeader 
+        user={user}
+        onLoginClick={() => setIsLoginDialogOpen(true)}
+        onLogout={handleLogout}
+        onNavigateToMyPage={() => setCurrentPage("mypage")}
+        onNavigateToMain={() => setCurrentPage("main")}
+        onNavigateToServiceRegistration={() => setCurrentPage("service-registration")}
+      />
+      <SearchSection
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+      />
       <CategoryTabs
         selectedCategory={selectedCategory}
         onCategoryChange={setSelectedCategory}
       />
-      
-      {selectedCategory === "all" ? (
-        <>
-          <CourseGrid courses={bestCourses} title="🏆 베스트 강의" />
-          <PromoBanner />
-          <CourseGrid courses={newCourses} title="🆕 신규 강의" />
-          <CourseGrid courses={allCourses.slice(0, 8)} title="📚 전체 강의" />
-        </>
-      ) : (
-        <CourseGrid courses={filteredCourses} />
-      )}
-      
+      <SearchFilters
+        sortBy={sortBy}
+        onSortChange={setSortBy}
+        priceFilter={priceFilter}
+        onPriceFilterChange={setPriceFilter}
+        levelFilter={levelFilter}
+        onLevelFilterChange={setLevelFilter}
+        resultCount={filteredAndSortedCourses.length}
+      />
+      <SearchResults
+        courses={filteredAndSortedCourses}
+        searchQuery={searchQuery}
+        onCourseClick={handleCourseClick}
+      />
       <InfLearnFooter />
+      
+      <LoginDialog
+        open={isLoginDialogOpen}
+        onOpenChange={setIsLoginDialogOpen}
+        onLogin={handleLogin}
+      />
     </div>
   );
 }

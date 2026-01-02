@@ -30,12 +30,16 @@ function DialogClose({
   return <DialogPrimitive.Close data-slot="dialog-close" {...props} />;
 }
 
-function DialogOverlay({
-  className,
-  ...props
-}: React.ComponentProps<typeof DialogPrimitive.Overlay>) {
+function DialogOverlay(
+  {
+    className,
+    ...props
+  }: React.ComponentProps<typeof DialogPrimitive.Overlay>,
+  ref: React.ForwardedRef<React.ElementRef<typeof DialogPrimitive.Overlay>>
+) {
   return (
     <DialogPrimitive.Overlay
+      ref={ref}
       data-slot="dialog-overlay"
       className={cn(
         "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/50",
@@ -46,18 +50,24 @@ function DialogOverlay({
   );
 }
 
-function DialogContent({
-  className,
-  children,
-  ...props
-}: React.ComponentProps<typeof DialogPrimitive.Content>) {
+const DialogOverlayWithRef = React.forwardRef(DialogOverlay);
+
+function DialogContent(
+  {
+    className,
+    children,
+    ...props
+  }: React.ComponentProps<typeof DialogPrimitive.Content>,
+  ref: React.ForwardedRef<React.ElementRef<typeof DialogPrimitive.Content>>
+) {
   return (
     <DialogPortal data-slot="dialog-portal">
-      <DialogOverlay />
+      <DialogOverlayWithRef />
       <DialogPrimitive.Content
+        ref={ref}
         data-slot="dialog-content"
         className={cn(
-          "bg-background data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 rounded-lg border p-6 shadow-lg duration-200 sm:max-w-lg",
+          "bg-background data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 rounded-md border p-6 shadow-lg duration-200 sm:max-w-lg",
           className,
         )}
         {...props}
@@ -71,6 +81,8 @@ function DialogContent({
     </DialogPortal>
   );
 }
+
+const DialogContentWithRef = React.forwardRef(DialogContent);
 
 function DialogHeader({ className, ...props }: React.ComponentProps<"div">) {
   return (
@@ -124,11 +136,11 @@ function DialogDescription({
 export {
   Dialog,
   DialogClose,
-  DialogContent,
+  DialogContentWithRef as DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
-  DialogOverlay,
+  DialogOverlayWithRef as DialogOverlay,
   DialogPortal,
   DialogTitle,
   DialogTrigger,

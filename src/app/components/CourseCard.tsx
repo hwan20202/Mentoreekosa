@@ -21,15 +21,19 @@ export interface Course {
 
 interface CourseCardProps {
   course: Course;
+  onClick?: () => void;
 }
 
-export function CourseCard({ course }: CourseCardProps) {
+export function CourseCard({ course, onClick }: CourseCardProps) {
   const discount = course.originalPrice
     ? Math.round(((course.originalPrice - course.price) / course.originalPrice) * 100)
     : 0;
 
   return (
-    <Card className="group overflow-hidden border rounded-lg hover:shadow-xl transition-all duration-300 cursor-pointer">
+    <Card 
+      className="group overflow-hidden border hover:shadow-lg transition-all duration-300 cursor-pointer"
+      onClick={onClick}
+    >
       {/* Thumbnail */}
       <div className="relative aspect-video overflow-hidden bg-gray-100">
         <img
@@ -41,7 +45,7 @@ export function CourseCard({ course }: CourseCardProps) {
         {/* Badges */}
         <div className="absolute top-2 left-2 flex gap-2">
           {course.isNew && (
-            <Badge className="bg-[#00C471] hover:bg-[#00B368]">NEW</Badge>
+            <Badge className="bg-[#00C471] hover:bg-[#00B366]">NEW</Badge>
           )}
           {course.isBest && (
             <Badge className="bg-orange-500 hover:bg-orange-600">BEST</Badge>
