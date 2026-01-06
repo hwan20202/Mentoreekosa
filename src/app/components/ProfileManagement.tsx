@@ -14,12 +14,9 @@ export function ProfileManagement({ user }: ProfileManagementProps) {
   const [nickname, setNickname] = useState(user.name);
   const [phone, setPhone] = useState("010-9342-3631");
   const [introduction, setIntroduction] = useState(
-    "안녕하세요! 5년 경력의 프론트엔드 개발자입니다."
+    "안녕하세요! 5년 경력의 프론트엔드 개발자입니다.\n\nReact, TypeScript, Next.js를 주로 사용하며, 사용자 경험을 중시하는 개발을 지향합니다.\n멘티분들과 함께 성장하는 것을 즐기며, 실무에서 바로 적용할 수 있는 실용적인 지식을 전달하고자 합니다."
   );
   const [category, setCategory] = useState("웹 개발");
-  const [career, setCareer] = useState(
-    "• 2021-현재: ABC 테크 - 시니어 프론트엔드 개발자\n• 2019-2021: XYZ 스타트업 - 프론트엔드 개발자\n• 2018-2019: 123 컴퍼니 - 주니어 개발자"
-  );
 
   const [isEditingNickname, setIsEditingNickname] = useState(false);
   const [isEditingPhone, setIsEditingPhone] = useState(false);
@@ -156,6 +153,19 @@ export function ProfileManagement({ user }: ProfileManagementProps) {
             <div className="space-y-8">
               <h3 className="text-xl">자기소개</h3>
 
+              {/* Category */}
+              <div className="space-y-3">
+                <label className="text-gray-600">카테고리</label>
+                <Input
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                  placeholder="예: 웹 개발, 데이터 분석 등"
+                />
+                <p className="text-sm text-gray-500">
+                  * 카테고리는 추후 논의 예정입니다.
+                </p>
+              </div>
+
               {/* Introduction */}
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
@@ -182,38 +192,14 @@ export function ProfileManagement({ user }: ProfileManagementProps) {
                   <Textarea
                     value={introduction}
                     onChange={(e) => setIntroduction(e.target.value)}
-                    className="min-h-[100px]"
+                    className="min-h-[300px]"
                     placeholder="자신을 간단히 소개해주세요"
                   />
                 ) : (
-                  <p className="text-gray-700 bg-gray-50 p-4 rounded-lg">
+                  <p className="text-gray-700 bg-gray-50 p-6 rounded-lg min-h-[300px] whitespace-pre-wrap">
                     {introduction}
                   </p>
                 )}
-              </div>
-
-              {/* Category */}
-              <div className="space-y-3">
-                <label className="text-gray-600">카테고리</label>
-                <Input
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  placeholder="예: 웹 개발, 데이터 분석 등"
-                />
-                <p className="text-sm text-gray-500">
-                  * 카테고리는 추후 논의 예정입니다.
-                </p>
-              </div>
-
-              {/* Career */}
-              <div className="space-y-3">
-                <label className="text-gray-600">경력</label>
-                <Textarea
-                  value={career}
-                  onChange={(e) => setCareer(e.target.value)}
-                  className="min-h-[200px] font-mono text-sm"
-                  placeholder="경력 사항을 입력해주세요"
-                />
               </div>
 
               <div className="flex justify-end pt-4">

@@ -33,7 +33,7 @@ export function MyPage({ user, onLoginClick, onLogout, onNavigateToMain, onNavig
         <MyPageSidebar activeTab={activeTab} onTabChange={setActiveTab} />
         
         <main className="flex-1 bg-gray-50">
-          {activeTab === "home" && <MyPageHome userName={user.name} />}
+          {activeTab === "home" && <MyPageHome userName={user.name} onTabChange={setActiveTab} />}
           {activeTab === "coupons" && (
             <div className="p-8">
               <h2 className="text-2xl mb-4">내 쿠폰</h2>

@@ -15,27 +15,97 @@ interface Schedule {
 
 // Mock schedule data
 const mockSchedules: Record<string, Schedule[]> = {
-  "2026-01-15": [
+  "2026-01-04": [
     {
       id: "1",
-      title: "React 고급 패턴 멘토링",
+      title: "React 심화 학습 멘토링",
       time: "14:00 - 15:00",
       location: "온라인",
       type: "mentoring",
     },
     {
       id: "2",
-      title: "TypeScript 실습 클래스",
+      title: "Next.js 프로젝트 리뷰",
       time: "16:00 - 18:00",
+      location: "온라인",
+      type: "mentoring",
+    },
+  ],
+  "2026-01-06": [
+    {
+      id: "3",
+      title: "TypeScript 기초부터 실전까지",
+      time: "10:00 - 12:00",
       location: "강남 캠퍼스",
       type: "class",
     },
   ],
+  "2026-01-08": [
+    {
+      id: "4",
+      title: "웹 개발 멘토링",
+      time: "14:00 - 16:00",
+      location: "온라인",
+      type: "mentoring",
+    },
+  ],
+  "2026-01-10": [
+    {
+      id: "5",
+      title: "알고리즘 스터디 - 1회차",
+      time: "15:00 - 17:00",
+      location: "온라인",
+      type: "study",
+    },
+  ],
+  "2026-01-12": [
+    {
+      id: "6",
+      title: "프론트엔드 커리어 상담",
+      time: "10:00 - 11:00",
+      location: "온라인",
+      type: "mentoring",
+    },
+  ],
+  "2026-01-15": [
+    {
+      id: "7",
+      title: "React 멘토링",
+      time: "14:00 - 15:00",
+      location: "온라인",
+      type: "mentoring",
+    },
+  ],
+  "2026-01-17": [
+    {
+      id: "8",
+      title: "알고리즘 스터디 - 2회차",
+      time: "15:00 - 17:00",
+      location: "온라인",
+      type: "study",
+    },
+  ],
   "2026-01-20": [
     {
-      id: "3",
-      title: "알고리즘 스터디",
-      time: "19:00 - 21:00",
+      id: "9",
+      title: "JavaScript 심화 클래스",
+      time: "10:00 - 12:00",
+      location: "강남 캠퍼스",
+      type: "class",
+    },
+    {
+      id: "10",
+      title: "풀스택 개발 멘토링",
+      time: "14:00 - 16:00",
+      location: "온라인",
+      type: "mentoring",
+    },
+  ],
+  "2026-01-24": [
+    {
+      id: "11",
+      title: "알고리즘 스터디 - 3회차",
+      time: "15:00 - 17:00",
       location: "온라인",
       type: "study",
     },
@@ -51,7 +121,7 @@ const typeColors = {
 const typeLabels = {
   mentoring: "멘토링",
   class: "클래스",
-  study: "스터���",
+  study: "스터디",
 };
 
 export function MyPageCalendar() {
@@ -60,10 +130,11 @@ export function MyPageCalendar() {
   const dateKey = format(selectedDate, "yyyy-MM-dd");
   const schedules = mockSchedules[dateKey] || [];
 
-  // Dates with schedules
-  const scheduleDates = Object.keys(mockSchedules).map(
-    (key) => new Date(key)
-  );
+  // Dates with schedules - ensure proper date creation without timezone issues
+  const scheduleDates = Object.keys(mockSchedules).map((key) => {
+    const [year, month, day] = key.split('-').map(Number);
+    return new Date(year, month - 1, day);
+  });
 
   return (
     <div className="space-y-4">
@@ -78,12 +149,12 @@ export function MyPageCalendar() {
             selected={selectedDate}
             onSelect={(date) => date && setSelectedDate(date)}
             locale={ko}
-            className="border"
+            className="border rounded-lg"
             modifiers={{
               hasSchedule: scheduleDates,
             }}
             modifiersClassNames={{
-              hasSchedule: "bg-[#00C471]/10 font-bold text-[#00C471]",
+              hasSchedule: "bg-[#00C471]/10 hover:bg-[#00C471]/20 font-semibold text-[#00C471]",
             }}
           />
         </CardContent>

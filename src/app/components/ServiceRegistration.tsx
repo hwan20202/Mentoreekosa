@@ -62,6 +62,7 @@ interface OneDaySession {
   date: string;
   startTime: string;
   endTime: string;
+  price: string;
 }
 
 export function ServiceRegistration({
@@ -81,6 +82,7 @@ export function ServiceRegistration({
   const [oneDaySessions, setOneDaySessions] = useState<OneDaySession[]>([]);
   const [newSessionStartTime, setNewSessionStartTime] = useState("");
   const [newSessionEndTime, setNewSessionEndTime] = useState("");
+  const [newSessionPrice, setNewSessionPrice] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -262,16 +264,26 @@ export function ServiceRegistration({
       return;
     }
 
+    // 원데이 클래스일 때만 가격 검증
+    if (serviceType === "1-n-oneday") {
+      if (!newSessionPrice || isNaN(Number(newSessionPrice)) || Number(newSessionPrice) < 0) {
+        alert("올바른 가격을 입력해주세요.");
+        return;
+      }
+    }
+
     const newSession: OneDaySession = {
       id: Date.now().toString(),
       date: format(selectedDate, "yyyy-MM-dd"),
       startTime: newSessionStartTime,
       endTime: newSessionEndTime,
+      price: serviceType === "1-n-oneday" ? newSessionPrice : "0",
     };
 
     setOneDaySessions([...oneDaySessions, newSession]);
     setNewSessionStartTime("");
     setNewSessionEndTime("");
+    setNewSessionPrice("");
   };
 
   const removeOneDaySession = (sessionId: string) => {
@@ -1013,8 +1025,8 @@ export function ServiceRegistration({
                             {format(selectedDate, "yyyy년 M월 d일 (EEE)", { locale: ko })} 회차 추가
                           </h4>
                           
-                          <div className="flex gap-3 items-end">
-                            <div className="flex-1 space-y-2">
+                          <div className="grid grid-cols-[1fr_1fr_1fr_auto] gap-3 items-end">
+                            <div className="space-y-2">
                               <Label className="text-sm">시작 시간</Label>
                               <Input
                                 type="time"
@@ -1023,13 +1035,24 @@ export function ServiceRegistration({
                                 className="bg-white"
                               />
                             </div>
-                            <div className="flex-1 space-y-2">
+                            <div className="space-y-2">
                               <Label className="text-sm">종료 시간</Label>
                               <Input
                                 type="time"
                                 value={newSessionEndTime}
                                 onChange={(e) => setNewSessionEndTime(e.target.value)}
                                 className="bg-white"
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label className="text-sm">가격 (원)</Label>
+                              <Input
+                                type="number"
+                                value={newSessionPrice}
+                                onChange={(e) => setNewSessionPrice(e.target.value)}
+                                placeholder="50000"
+                                className="bg-white"
+                                min="0"
                               />
                             </div>
                             <Button
@@ -1058,12 +1081,15 @@ export function ServiceRegistration({
                                   key={session.id}
                                   className="flex items-center justify-between p-3 bg-white border border-gray-200 rounded-md"
                                 >
-                                  <div className="flex items-center gap-3">
+                                  <div className="flex items-center gap-4">
                                     <span className="text-sm font-medium text-gray-500">
                                       {index + 1}회차
                                     </span>
                                     <span className="text-sm font-medium">
                                       {session.startTime} - {session.endTime}
+                                    </span>
+                                    <span className="text-sm text-[#00C471] font-medium">
+                                      {Number(session.price).toLocaleString()}원
                                     </span>
                                   </div>
                                   <Button

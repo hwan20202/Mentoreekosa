@@ -59,7 +59,7 @@ const allCourses: Course[] = [
   },
   {
     id: 4,
-    title: "실전! 디지털 마케팅 A to Z - 구��� 애널리틱스부터 광고 운영까지",
+    title: "실전! 디지털 마케팅 A to Z - 구글 애널리틱스부터 광고 운영까지",
     instructor: "최마케터",
     price: 59000,
     originalPrice: 118000,
@@ -185,13 +185,14 @@ const allCourses: Course[] = [
 export default function App() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
-  const [sortBy, setSortBy] = useState("relevant");
+  const [sortBy, setSortBy] = useState("popular");
   const [priceFilter, setPriceFilter] = useState("all");
   const [levelFilter, setLevelFilter] = useState("all");
   const [user, setUser] = useState<{ email: string; name: string } | null>(null);
   const [isLoginDialogOpen, setIsLoginDialogOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState<"main" | "mypage" | "service-registration" | "service-detail" | "service-application">("main");
   const [selectedServiceId, setSelectedServiceId] = useState<number | null>(null);
+  const [userRole, setUserRole] = useState<"mentee" | "mentor">("mentee");
 
   const handleLogin = (userData: { email: string; name: string }) => {
     setUser(userData);
