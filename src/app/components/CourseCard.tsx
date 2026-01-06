@@ -17,6 +17,7 @@ export interface Course {
   tags: string[];
   isNew?: boolean;
   isBest?: boolean;
+  serviceType?: "mentoring" | "oneday" | "study";
 }
 
 interface CourseCardProps {

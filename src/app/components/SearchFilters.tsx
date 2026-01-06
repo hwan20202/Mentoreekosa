@@ -11,20 +11,16 @@ import { Button } from "./ui/button";
 interface SearchFiltersProps {
   sortBy: string;
   onSortChange: (value: string) => void;
-  priceFilter: string;
-  onPriceFilterChange: (value: string) => void;
-  levelFilter: string;
-  onLevelFilterChange: (value: string) => void;
+  serviceTypeFilter: string;
+  onServiceTypeFilterChange: (value: string) => void;
   resultCount: number;
 }
 
 export function SearchFilters({
   sortBy,
   onSortChange,
-  priceFilter,
-  onPriceFilterChange,
-  levelFilter,
-  onLevelFilterChange,
+  serviceTypeFilter,
+  onServiceTypeFilterChange,
   resultCount,
 }: SearchFiltersProps) {
   return (
@@ -48,6 +44,19 @@ export function SearchFilters({
                 <SelectItem value="latest">최신순</SelectItem>
                 <SelectItem value="price-low">가격 낮은순</SelectItem>
                 <SelectItem value="price-high">가격 높은순</SelectItem>
+              </SelectContent>
+            </Select>
+
+            {/* Service Type Filter */}
+            <Select value={serviceTypeFilter} onValueChange={onServiceTypeFilterChange}>
+              <SelectTrigger className="w-[140px]">
+                <SelectValue placeholder="서비스 유형" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">전체</SelectItem>
+                <SelectItem value="mentoring">1:1 멘토링</SelectItem>
+                <SelectItem value="oneday">1:N 원데이</SelectItem>
+                <SelectItem value="study">1:N 스터디</SelectItem>
               </SelectContent>
             </Select>
           </div>

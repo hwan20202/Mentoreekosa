@@ -6,6 +6,7 @@ import { SearchFilters } from "./components/SearchFilters";
 import { SearchResults } from "./components/SearchResults";
 import { InfLearnFooter } from "./components/InfLearnFooter";
 import { LoginDialog } from "./components/LoginDialog";
+import { SignupDialog } from "./components/SignupDialog";
 import { MyPage } from "./components/MyPage";
 import { ServiceRegistration } from "./components/ServiceRegistration";
 import { ServiceDetail } from "./components/ServiceDetail";
@@ -28,6 +29,7 @@ const allCourses: Course[] = [
     tags: ["React", "JavaScript", "Web"],
     isNew: true,
     isBest: true,
+    serviceType: "study",
   },
   {
     id: 2,
@@ -42,6 +44,7 @@ const allCourses: Course[] = [
     level: "초급",
     tags: ["Python", "데이터분석"],
     isBest: true,
+    serviceType: "study",
   },
   {
     id: 3,
@@ -56,6 +59,7 @@ const allCourses: Course[] = [
     level: "입문",
     tags: ["Figma", "UI", "UX"],
     isNew: true,
+    serviceType: "oneday",
   },
   {
     id: 4,
@@ -69,6 +73,7 @@ const allCourses: Course[] = [
     category: "marketing",
     level: "중급",
     tags: ["마케팅", "광고", "분석"],
+    serviceType: "mentoring",
   },
   {
     id: 5,
@@ -83,6 +88,7 @@ const allCourses: Course[] = [
     level: "초급",
     tags: ["AI", "ML", "Python"],
     isBest: true,
+    serviceType: "study",
   },
   {
     id: 6,
@@ -97,6 +103,7 @@ const allCourses: Course[] = [
     level: "중급",
     tags: ["ReactNative", "앱개발"],
     isNew: true,
+    serviceType: "oneday",
   },
   {
     id: 7,
@@ -110,6 +117,7 @@ const allCourses: Course[] = [
     category: "business",
     level: "중급",
     tags: ["스타트업", "비즈니스"],
+    serviceType: "mentoring",
   },
   {
     id: 8,
@@ -124,6 +132,7 @@ const allCourses: Course[] = [
     level: "고급",
     tags: ["Node.js", "MongoDB"],
     isBest: true,
+    serviceType: "study",
   },
   {
     id: 9,
@@ -137,6 +146,7 @@ const allCourses: Course[] = [
     category: "design",
     level: "중급",
     tags: ["브랜딩", "디자인"],
+    serviceType: "oneday",
   },
   {
     id: 10,
@@ -151,6 +161,7 @@ const allCourses: Course[] = [
     tags: ["SQL", "Database"],
     isNew: true,
     isBest: true,
+    serviceType: "study",
   },
   {
     id: 11,
@@ -164,6 +175,7 @@ const allCourses: Course[] = [
     category: "marketing",
     level: "초급",
     tags: ["SNS", "마케팅"],
+    serviceType: "mentoring",
   },
   {
     id: 12,
@@ -179,6 +191,7 @@ const allCourses: Course[] = [
     tags: ["ChatGPT", "AI", "생산성"],
     isNew: true,
     isBest: true,
+    serviceType: "oneday",
   },
 ];
 
@@ -188,11 +201,15 @@ export default function App() {
   const [sortBy, setSortBy] = useState("popular");
   const [priceFilter, setPriceFilter] = useState("all");
   const [levelFilter, setLevelFilter] = useState("all");
+  const [serviceTypeFilter, setServiceTypeFilter] = useState("all");
   const [user, setUser] = useState<{ email: string; name: string } | null>(null);
   const [isLoginDialogOpen, setIsLoginDialogOpen] = useState(false);
+  const [isSignupDialogOpen, setIsSignupDialogOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState<"main" | "mypage" | "service-registration" | "service-detail" | "service-application">("main");
   const [selectedServiceId, setSelectedServiceId] = useState<number | null>(null);
   const [userRole, setUserRole] = useState<"mentee" | "mentor">("mentee");
+  const [page, setPage] = useState(1);
+  const itemsPerPage = 8;
 
   const handleLogin = (userData: { email: string; name: string }) => {
     setUser(userData);
@@ -244,6 +261,11 @@ export default function App() {
       filtered = filtered.filter((course) => course.level === levelFilter);
     }
 
+    // Filter by service type
+    if (serviceTypeFilter !== "all") {
+      filtered = filtered.filter((course) => course.serviceType === serviceTypeFilter);
+    }
+
     // Sort
     const sorted = [...filtered];
     switch (sortBy) {
@@ -269,7 +291,27 @@ export default function App() {
     }
 
     return sorted;
-  }, [searchQuery, selectedCategory, sortBy, priceFilter, levelFilter]);
+  }, [searchQuery, selectedCategory, sortBy, priceFilter, levelFilter, serviceTypeFilter]);
+
+  // Pagination logic
+  const totalPages = Math.ceil(filteredAndSortedCourses.length / itemsPerPage);
+  const paginatedCourses = useMemo(() => {
+    const startIndex = (page - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return filteredAndSortedCourses.slice(startIndex, endIndex);
+  }, [filteredAndSortedCourses, page, itemsPerPage]);
+
+  // Reset to page 1 when filters change
+  const handleFilterChange = (callback: () => void) => {
+    setPage(1);
+    callback();
+  };
+
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+    // Scroll to top of results
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   // Show ServiceRegistration page
   if (currentPage === "service-registration") {
@@ -321,6 +363,7 @@ export default function App() {
       <InfLearnHeader 
         user={user}
         onLoginClick={() => setIsLoginDialogOpen(true)}
+        onSignupClick={() => setIsSignupDialogOpen(true)}
         onLogout={handleLogout}
         onNavigateToMyPage={() => setCurrentPage("mypage")}
         onNavigateToMain={() => setCurrentPage("main")}
@@ -337,16 +380,17 @@ export default function App() {
       <SearchFilters
         sortBy={sortBy}
         onSortChange={setSortBy}
-        priceFilter={priceFilter}
-        onPriceFilterChange={setPriceFilter}
-        levelFilter={levelFilter}
-        onLevelFilterChange={setLevelFilter}
+        serviceTypeFilter={serviceTypeFilter}
+        onServiceTypeFilterChange={setServiceTypeFilter}
         resultCount={filteredAndSortedCourses.length}
       />
       <SearchResults
-        courses={filteredAndSortedCourses}
+        courses={paginatedCourses}
         searchQuery={searchQuery}
         onCourseClick={handleCourseClick}
+        currentPage={page}
+        totalPages={totalPages}
+        onPageChange={handlePageChange}
       />
       <InfLearnFooter />
       
@@ -354,6 +398,15 @@ export default function App() {
         open={isLoginDialogOpen}
         onOpenChange={setIsLoginDialogOpen}
         onLogin={handleLogin}
+      />
+      <SignupDialog
+        open={isSignupDialogOpen}
+        onOpenChange={setIsSignupDialogOpen}
+        onSignup={handleLogin}
+        onSwitchToLogin={() => {
+          setIsSignupDialogOpen(false);
+          setIsLoginDialogOpen(true);
+        }}
       />
     </div>
   );

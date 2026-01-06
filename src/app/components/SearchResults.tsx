@@ -1,12 +1,16 @@
 import { CourseCard, type Course } from "./CourseCard";
+import { Pagination } from "./Pagination";
 
 interface SearchResultsProps {
   courses: Course[];
   searchQuery: string;
   onCourseClick?: (courseId: number) => void;
+  currentPage: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
 }
 
-export function SearchResults({ courses, searchQuery, onCourseClick }: SearchResultsProps) {
+export function SearchResults({ courses, searchQuery, onCourseClick, currentPage, totalPages, onPageChange }: SearchResultsProps) {
   if (courses.length === 0) {
     return (
       <section className="py-16">
@@ -49,6 +53,11 @@ export function SearchResults({ courses, searchQuery, onCourseClick }: SearchRes
             <CourseCard key={course.id} course={course} onClick={() => onCourseClick?.(course.id)} />
           ))}
         </div>
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={onPageChange}
+        />
       </div>
     </section>
   );

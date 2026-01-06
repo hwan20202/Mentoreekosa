@@ -29,6 +29,7 @@ import {
 interface InfLearnHeaderProps {
   user: { email: string; name: string } | null;
   onLoginClick: () => void;
+  onSignupClick?: () => void;
   onLogout: () => void;
   onNavigateToMyPage?: () => void;
   onNavigateToMain?: () => void;
@@ -38,6 +39,7 @@ interface InfLearnHeaderProps {
 export function InfLearnHeader({
   user,
   onLoginClick,
+  onSignupClick,
   onLogout,
   onNavigateToMyPage,
   onNavigateToMain,
@@ -55,61 +57,20 @@ export function InfLearnHeader({
             >
               로고
             </h1>
-
-            {/* Navigation - Desktop */}
-            <nav className="hidden lg:flex items-center gap-6">
-              {/* <button className="flex items-center gap-1 hover:text-[#00C471] transition-colors">
-                강의
-                <ChevronDown className="size-4" />
-              </button> */}
-              <a
-                href="#"
-                className="hover:text-[#00C471] transition-colors"
-              >
-                1대1 멘토링
-              </a>
-              <a
-                href="#"
-                className="hover:text-[#00C471] transition-colors"
-              >
-                원데이 클래스
-              </a>
-              <a
-                href="#"
-                className="hover:text-[#00C471] transition-colors"
-              >
-                스터디
-              </a>
-            </nav>
           </div>
 
           {/* Right Actions */}
           <div className="flex items-center gap-3">
-            {/* <Button
-              variant="ghost"
-              size="icon"
-              className="hidden md:flex"
-            >
-              <Search className="size-5" />
-            </Button> */}
-
             {user ? (
               <>
-                {/* <Button variant="ghost" size="icon" className="relative">
-                  <Bell className="size-5" />
-                  <span className="absolute top-1 right-1 size-2 bg-red-500 rounded-full"></span>
-                </Button>
-                
-                <Button variant="ghost" size="icon">
-                  <ShoppingBag className="size-5" />
-                </Button> */}
-
                 <Button
                   className="bg-[#00C471] hover:bg-[#00B366] gap-2"
                   onClick={onNavigateToServiceRegistration}
                 >
                   <Plus className="size-4" />
-                  <span className="hidden sm:inline">서비스 등록</span>
+                  <span className="hidden sm:inline">
+                    서비스 등록
+                  </span>
                 </Button>
 
                 <DropdownMenu>
@@ -143,11 +104,13 @@ export function InfLearnHeader({
                       </div>
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={onNavigateToMyPage}>
+                    <DropdownMenuItem
+                      onClick={onNavigateToMyPage}
+                    >
                       <User className="size-4 mr-2" />
                       마이페이지
                     </DropdownMenuItem>
-                    <DropdownMenuItem>
+                    {/* <DropdownMenuItem>
                       <BookOpen className="size-4 mr-2" />
                       내 강의실
                     </DropdownMenuItem>
@@ -163,7 +126,7 @@ export function InfLearnHeader({
                     <DropdownMenuItem>
                       <Settings className="size-4 mr-2" />
                       설정
-                    </DropdownMenuItem>
+                    </DropdownMenuItem> */}
                     <DropdownMenuItem
                       onClick={onLogout}
                       className="text-red-600"
@@ -176,9 +139,6 @@ export function InfLearnHeader({
               </>
             ) : (
               <>
-                <Button variant="ghost" size="icon">
-                  <ShoppingBag className="size-5" />
-                </Button>
                 <Button
                   variant="outline"
                   className="hidden sm:flex"
@@ -188,7 +148,7 @@ export function InfLearnHeader({
                 </Button>
                 <Button
                   className="hidden sm:flex bg-[#00C471] hover:bg-[#00B368]"
-                  onClick={onLoginClick}
+                  onClick={onSignupClick}
                 >
                   회원가입
                 </Button>
